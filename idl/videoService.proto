@@ -1,0 +1,100 @@
+syntax="proto3";
+package services;
+option go_package ="./;pb";
+import "userService.proto";
+import "google/protobuf/empty.proto";
+//Video实体
+message VideoDVO {
+  int64 id = 1;
+  User  author= 2;
+  string play_url = 3;
+  string cover_url = 4;
+  int64 favorite_count = 5;
+  int64 comment_count = 6;
+  bool is_favorite = 7;
+  string title = 8;
+}
+//视频流请求
+message FeedRequest{
+  string latest_time=1;
+  int64 user_id=2;
+}
+//投稿请求
+message PublishRequest{
+  bytes data=1;
+  int64 user_id=2;
+  //string token=2;
+  string title=3;
+  string file_name=4;
+}
+//视频流响应
+message FeedResponse{
+  int64 next_time=1;
+  repeated VideoDVO video_list=2;
+}
+//发布列表请求
+message PublishListRequest{
+  //string token=1;
+  int64 user_id=2;
+}
+//发布列表响应
+message PublishListResponse{
+  repeated VideoDVO video_list=1;
+}
+
+//赞请求
+message LikeVideoRequest{
+  int64 user_id=1;
+  string video_id=2;
+  int32 action_type=3;
+}
+//喜欢列表请求
+message QueryVideosOfLikeRequest{
+  string user_id=1;
+  //string token=2;
+}
+//喜欢列表响应
+message QueryVideosOfLikeResponse{
+  repeated VideoDVO video_list=1;
+}
+
+
+//评论实体
+message Comment{
+  int64 id=1;
+  User user=2;
+  string content=3;
+  string create_date=4;
+}
+//发表评论请求
+message PostCommentsRequest{
+  string video_id=1;
+  Comment comment=2;
+}
+//评论响应
+//message PostCommentResponse{
+//
+//}
+//删除评论请求
+message DeleteCommentsRequest{
+  int64 comment_id=1;
+}
+//删除评论响应
+//评论列表请求
+message CommentListRequest{
+  int64 video_id=1;
+}
+//评论列表响应
+message CommentListResponse{
+  repeated Comment comments=1;
+}
+service VideoService{
+  rpc Feed(FeedRequest) returns(FeedResponse);
+  rpc Publish(PublishRequest) returns(google.protobuf.Empty);
+  rpc PublishList(PublishListRequest) returns(PublishListResponse);
+  rpc LikeVideo(LikeVideoRequest) returns(google.protobuf.Empty);
+  rpc QueryVideosOfLike(QueryVideosOfLikeRequest) returns(QueryVideosOfLikeResponse);
+  rpc PostComments(PostCommentsRequest) returns(google.protobuf.Empty);
+  rpc DeleteComments(DeleteCommentsRequest) returns(google.protobuf.Empty);
+  rpc CommentList(CommentListRequest) returns(CommentListResponse);
+}
